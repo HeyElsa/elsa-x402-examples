@@ -1,0 +1,33 @@
+{
+  "name": "elsa-x402-examples",
+  "version": "1.0.0",
+  "description": "Example scripts for testing Elsa X402 API endpoints",
+  "type": "module",
+  "scripts": {
+    "test:all": "node run-all.js",
+    "test:health": "node endpoints/health.js",
+    "test:search-token": "node endpoints/search-token.js",
+    "test:token-price": "node endpoints/token-price.js",
+    "test:balances": "node endpoints/balances.js",
+    "test:portfolio": "node endpoints/portfolio.js",
+    "test:transaction-history": "node endpoints/transaction-history.js",
+    "test:analyze-wallet": "node endpoints/analyze-wallet.js",
+    "test:yield-suggestions": "node endpoints/yield-suggestions.js",
+    "test:pnl-report": "node endpoints/pnl-report.js",
+    "test:limit-orders": "node endpoints/limit-orders.js",
+    "test:stake-balances": "node endpoints/stake-balances.js",
+    "test:gas-prices": "node endpoints/gas-prices.js",
+    "test:swap-quote": "node endpoints/swap-quote.js",
+    "test:execute-swap": "node endpoints/execute-swap.js",
+    "test:create-limit-order": "node endpoints/create-limit-order.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "viem": "^2.21.0",
+    "x402-axios": "^0.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
