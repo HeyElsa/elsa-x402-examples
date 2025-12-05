@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Vibrant comic-style colors matching the flame logo */
+:root {
+  --background: oklch(0.13 0.02 260);
+  --foreground: oklch(0.98 0.01 90);
+  --card: oklch(0.18 0.025 260);
+  --card-foreground: oklch(0.98 0.01 90);
+  --popover: oklch(0.16 0.02 260);
+  --popover-foreground: oklch(0.98 0.01 90);
+  /* Flame orange - primary action color */
+  --primary: oklch(0.72 0.22 45);
+  --primary-foreground: oklch(0.15 0.02 45);
+  /* Deep purple for secondary */
+  --secondary: oklch(0.35 0.12 290);
+  --secondary-foreground: oklch(0.95 0.02 90);
+  --muted: oklch(0.25 0.04 260);
+  --muted-foreground: oklch(0.7 0.02 260);
+  /* Teal/cyan accent matching the arrow */
+  --accent: oklch(0.72 0.18 180);
+  --accent-foreground: oklch(0.15 0.02 180);
+  /* Hot red for destructive/nuclear */
+  --destructive: oklch(0.62 0.26 25);
+  --destructive-foreground: oklch(0.98 0.01 90);
+  --border: oklch(0.35 0.06 280);
+  --input: oklch(0.22 0.04 260);
+  --ring: oklch(0.72 0.22 45);
+  /* Chart colors - vibrant comic palette */
+  --chart-1: oklch(0.72 0.22 45);
+  --chart-2: oklch(0.72 0.18 180);
+  --chart-3: oklch(0.65 0.24 30);
+  --chart-4: oklch(0.8 0.18 90);
+  --chart-5: oklch(0.55 0.2 290);
+  --radius: 1rem;
+}
+
+.dark {
+  --background: oklch(0.13 0.02 260);
+  --foreground: oklch(0.98 0.01 90);
+  --card: oklch(0.18 0.025 260);
+  --card-foreground: oklch(0.98 0.01 90);
+  --popover: oklch(0.16 0.02 260);
+  --popover-foreground: oklch(0.98 0.01 90);
+  --primary: oklch(0.72 0.22 45);
+  --primary-foreground: oklch(0.15 0.02 45);
+  --secondary: oklch(0.35 0.12 290);
+  --secondary-foreground: oklch(0.95 0.02 90);
+  --muted: oklch(0.25 0.04 260);
+  --muted-foreground: oklch(0.7 0.02 260);
+  --accent: oklch(0.72 0.18 180);
+  --accent-foreground: oklch(0.15 0.02 180);
+  --destructive: oklch(0.62 0.26 25);
+  --destructive-foreground: oklch(0.98 0.01 90);
+  --border: oklch(0.35 0.06 280);
+  --input: oklch(0.22 0.04 260);
+  --ring: oklch(0.72 0.22 45);
+  --chart-1: oklch(0.72 0.22 45);
+  --chart-2: oklch(0.72 0.18 180);
+  --chart-3: oklch(0.65 0.24 30);
+  --chart-4: oklch(0.8 0.18 90);
+  --chart-5: oklch(0.55 0.2 290);
+}
+
+@theme inline {
+  --font-sans: var(--font-bangers), "Comic Sans MS", cursive;
+  --font-mono: var(--font-geist-mono), "Geist Mono Fallback";
+  --font-body: var(--font-nunito), sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Comic-style animations */
+@keyframes flame-flicker {
+  0%,
+  100% {
+    transform: scale(1) rotate(-2deg);
+  }
+  25% {
+    transform: scale(1.05) rotate(1deg);
+  }
+  50% {
+    transform: scale(1.02) rotate(-1deg);
+  }
+  75% {
+    transform: scale(1.08) rotate(2deg);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes fire-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px oklch(0.72 0.22 45 / 0.4), 0 0 40px oklch(0.65 0.24 30 / 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px oklch(0.72 0.22 45 / 0.6), 0 0 60px oklch(0.65 0.24 30 / 0.3);
+  }
+}
+
+.animate-flame {
+  animation: flame-flicker 0.5s ease-in-out infinite;
+}
+.animate-bounce-in {
+  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+.animate-fire-glow {
+  animation: fire-glow 2s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(249, 115, 22, 0.3);
+  color: white;
+}
