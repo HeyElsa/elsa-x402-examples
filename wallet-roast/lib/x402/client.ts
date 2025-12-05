@@ -80,8 +80,21 @@ export async function fetchPortfolioWithPayment(
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `Portfolio fetch failed: ${response.status}`);
+    const errorData = await response.json().catch(() => null);
+
+    // Handle 402 - payment was rejected or failed
+    if (response.status === 402) {
+      const reason = errorData?.error || errorData?.message || 'Payment was not accepted';
+      throw new Error(`Payment failed: ${reason}`);
+    }
+
+    // Handle other errors
+    const errorMessage = typeof errorData?.error === 'string'
+      ? errorData.error
+      : typeof errorData?.message === 'string'
+        ? errorData.message
+        : `Portfolio fetch failed: ${response.status}`;
+    throw new Error(errorMessage);
   }
 
   return response.json();
