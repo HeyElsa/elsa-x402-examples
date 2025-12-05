@@ -341,8 +341,8 @@
     import { createWalletClient, custom, http, getAddress, toHex } from 'https://esm.sh/viem@2.21.0';
     import { base, polygon } from 'https://esm.sh/viem@2.21.0/chains';
 
-    // Production X402 API endpoint
-    const X402_API = 'https://x402-api.heyelsa.ai';
+    // X402 API endpoint - use local server for testing
+    const X402_API = 'http://localhost:3002';
 
     // Network config based on server
     const NETWORK_CONFIG = {
@@ -574,11 +574,13 @@
         nuclear: []
       };
 
-      const totalValue = portfolio?.portfolio?.total_value_usd || 0;
-      const balances = portfolio?.portfolio?.balances || [];
+      // API returns: { success, wallet_address, network, portfolio: { totalValueUSD, balances, ... }, timestamp }
+      const portfolioData = portfolio?.portfolio || {};
+      const totalValue = parseFloat(portfolioData.totalValueUSD || portfolioData.total_value_usd || 0);
+      const balances = portfolioData.balances || [];
       const tokenCount = balances.length;
-      const pnlData = pnl?.pnl_report?.overall_metrics || {};
-      const netPnl = parseFloat(pnlData.net_pnl_usd) || 0;
+      const pnlData = pnl?.pnl_report || {};
+      const netPnl = parseFloat(pnlData.total_pnl_usd || pnlData.net_pnl_usd || 0);
 
       // Check for meme coins
       const memeCoins = balances.filter(b =>
@@ -674,17 +676,18 @@
         // Generate the roast
         const roast = generateRoast(portfolio, pnl, selectedIntensity);
 
-        // Display result
-        const balances = portfolio?.portfolio?.balances || [];
-        const totalValue = portfolio?.portfolio?.total_value_usd || 0;
-        const pnlData = pnl?.pnl_report?.overall_metrics || {};
-        const netPnlValue = parseFloat(pnlData.net_pnl_usd || 0);
+        // Display result - use same structure as generateRoast
+        const displayPortfolio = portfolio?.portfolio || {};
+        const displayBalances = displayPortfolio.balances || [];
+        const displayTotalValue = parseFloat(displayPortfolio.totalValueUSD || displayPortfolio.total_value_usd || 0);
+        const displayPnlData = pnl?.pnl_report || {};
+        const netPnlValue = parseFloat(displayPnlData.total_pnl_usd || displayPnlData.net_pnl_usd || 0);
 
         roastText.textContent = `"${roast}"`;
         stats.innerHTML = `
           <div>Wallet: <span>${targetWallet.slice(0,6)}...${targetWallet.slice(-4)}</span></div>
-          <div>Total Value: <span>$${totalValue.toFixed(2)}</span></div>
-          <div>Tokens: <span>${balances.length}</span></div>
+          <div>Total Value: <span>$${displayTotalValue.toFixed(2)}</span></div>
+          <div>Tokens: <span>${displayBalances.length}</span></div>
           <div>Net P&L: <span style="color:${netPnlValue >= 0 ? '#00d26a' : '#ff6b6b'}">${netPnlValue >= 0 ? '+' : ''}$${netPnlValue.toFixed(2)}</span></div>
         `;
 
