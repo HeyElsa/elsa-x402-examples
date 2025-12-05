@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       model: xai('grok-3-mini'),
       system: systemPrompt,
       prompt: userPrompt,
-      maxTokens: 300,
+      maxOutputTokens: 300,
       temperature: 0.9, // Higher temperature for more creative roasts
     });
 
