@@ -108,7 +108,7 @@ export function WalletRoastForm() {
       ? roastText.substring(0, 147) + '...'
       : roastText;
     const tweetText = encodeURIComponent(
-      `"${roastSnippet}"\n\nGet roasted for $0.01: roast.x402.heyelsa.ai\n\n@heyelsa_ai #x402`,
+      `"${roastSnippet}"\n\nGet roasted for $0.01: https://walletroast.com\n\n@heyelsa_ai #x402`,
     );
     window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
   };
