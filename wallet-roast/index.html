@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallet Roast - Get Roasted for $0.01</title>
+  <meta name="description" content="Paste any wallet address, pay $0.01, get savagely roasted based on your on-chain data. Powered by x402.">
+  <meta property="og:title" content="Wallet Roast - Get Roasted for $0.01">
+  <meta property="og:description" content="The dumbest x402 demo. Also the best one.">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #ff6b6b, #feca57, #ff6b6b);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient 3s linear infinite;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .subtitle {
+      color: #888;
+      margin-bottom: 40px;
+      font-size: 1.1rem;
+    }
+
+    .price-tag {
+      display: inline-block;
+      background: #00d26a;
+      color: #000;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin-bottom: 30px;
+    }
+
+    .input-section {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .wallet-input {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 1rem;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      outline: none;
+      transition: border-color 0.3s;
+      font-family: monospace;
+    }
+
+    .wallet-input:focus {
+      border-color: #ff6b6b;
+    }
+
+    .wallet-input::placeholder {
+      color: #666;
+    }
+
+    .intensity-selector {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .intensity-btn {
+      padding: 10px 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+      background: transparent;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .intensity-btn:hover {
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    .intensity-btn.active {
+      border-color: #ff6b6b;
+      background: rgba(255,107,107,0.2);
+    }
+
+    .roast-btn {
+      width: 100%;
+      padding: 18px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #ff6b6b, #ee5a5a);
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 20px;
+    }
+
+    .roast-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(255,107,107,0.3);
+    }
+
+    .roast-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .whales {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .whale-btn {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: transparent;
+      color: #888;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .whale-btn:hover {
+      border-color: #feca57;
+      color: #feca57;
+    }
+
+    .result-section {
+      display: none;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 30px;
+      margin-top: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+      text-align: left;
+    }
+
+    .result-section.visible {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .roast-text {
+      font-size: 1.3rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      color: #ff6b6b;
+    }
+
+    .stats {
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .stats div {
+      margin: 5px 0;
+    }
+
+    .stats span {
+      color: #fff;
+    }
+
+    .share-btn {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      background: #1da1f2;
+      color: #fff;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .share-btn:hover {
+      opacity: 0.9;
+    }
+
+    .error {
+      color: #ff6b6b;
+      background: rgba(255,107,107,0.1);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .error.visible {
+      display: block;
+    }
+
+    .loading {
+      display: none;
+      color: #888;
+      margin-top: 15px;
+    }
+
+    .loading.visible {
+      display: block;
+    }
+
+    .loading::after {
+      content: '';
+      animation: dots 1.5s infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60%, 100% { content: '...'; }
+    }
+
+    .footer {
+      margin-top: 60px;
+      color: #555;
+      font-size: 0.85rem;
+    }
+
+    .footer a {
+      color: #888;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: #ff6b6b;
+    }
+
+    .x402-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.1);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Wallet Roast</h1>
+    <p class="subtitle">Get savagely roasted based on your on-chain data</p>
+    <div class="price-tag">$0.01 USDC on Base</div>
+
+    <div class="input-section">
+      <input
+        type="text"
+        class="wallet-input"
+        id="walletInput"
+        placeholder="Paste any wallet address (0x...)"
+        autocomplete="off"
+      >
+
+      <div class="intensity-selector">
+        <button class="intensity-btn" data-intensity="mild">Mild</button>
+        <button class="intensity-btn active" data-intensity="spicy">Spicy</button>
+        <button class="intensity-btn" data-intensity="nuclear">Nuclear</button>
+      </div>
+
+      <button class="roast-btn" id="roastBtn">Roast This Wallet</button>
+
+      <div class="whales">
+        <button class="whale-btn" data-address="0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045">Vitalik</button>
+        <button class="whale-btn" data-address="0x3DdfA8eC3052539b6C9549F12cEA2C295cfF5296">Jesse Pollak</button>
+        <button class="whale-btn" data-address="0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B">VB Old</button>
+      </div>
+
+      <div class="loading" id="loading">Analyzing wallet and generating roast</div>
+      <div class="error" id="error"></div>
+    </div>
+
+    <div class="result-section" id="result">
+      <div class="roast-text" id="roastText"></div>
+      <div class="stats" id="stats"></div>
+      <button class="share-btn" id="shareBtn">Share on X</button>
+    </div>
+
+    <div class="x402-badge">
+      Powered by <a href="https://x402.heyelsa.ai" target="_blank">x402</a> • Zero API keys • Direct micropayment
+    </div>
+
+    <div class="footer">
+      <p>This costs $0.01 paid directly to <a href="https://heyelsa.ai" target="_blank">Elsa</a> via x402</p>
+      <p style="margin-top:8px">No accounts. No API keys. Just your wallet.</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createWalletClient, custom, http, getAddress, toHex } from 'https://esm.sh/viem@2.21.0';
+    import { base, polygon } from 'https://esm.sh/viem@2.21.0/chains';
+
+    // Production X402 API endpoint
+    const X402_API = 'https://x402-api.heyelsa.ai';
+
+    // Network config based on server
+    const NETWORK_CONFIG = {
+      'base': { chain: base, chainId: 8453, chainIdHex: '0x2105', name: 'Base' },
+      'polygon': { chain: polygon, chainId: 137, chainIdHex: '0x89', name: 'Polygon' }
+    };
+
+    let selectedIntensity = 'spicy';
+    let walletClient = null;
+    let userAddress = null;
+    let currentNetwork = null;
+
+    // DOM elements
+    const walletInput = document.getElementById('walletInput');
+    const roastBtn = document.getElementById('roastBtn');
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const result = document.getElementById('result');
+    const roastText = document.getElementById('roastText');
+    const stats = document.getElementById('stats');
+    const shareBtn = document.getElementById('shareBtn');
+
+    // Intensity buttons
+    document.querySelectorAll('.intensity-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.intensity-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedIntensity = btn.dataset.intensity;
+      });
+    });
+
+    // Whale buttons
+    document.querySelectorAll('.whale-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        walletInput.value = btn.dataset.address;
+      });
+    });
+
+    // Connect wallet to the appropriate network
+    async function connectWallet(network) {
+      if (!window.ethereum) {
+        throw new Error('No wallet found. Please install MetaMask or Coinbase Wallet.');
+      }
+
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      userAddress = accounts[0];
+
+      const netConfig = NETWORK_CONFIG[network];
+      if (!netConfig) throw new Error(`Unsupported network: ${network}`);
+
+      currentNetwork = network;
+
+      // Switch to the correct network
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: netConfig.chainIdHex }],
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          // Add network if not available
+          const addParams = network === 'base' ? {
+            chainId: netConfig.chainIdHex,
+            chainName: 'Base',
+            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+            rpcUrls: ['https://mainnet.base.org'],
+            blockExplorerUrls: ['https://basescan.org']
+          } : {
+            chainId: netConfig.chainIdHex,
+            chainName: 'Polygon',
+            nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
+            rpcUrls: ['https://polygon-rpc.com'],
+            blockExplorerUrls: ['https://polygonscan.com']
+          };
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [addParams]
+          });
+        }
+      }
+
+      walletClient = createWalletClient({
+        account: userAddress,
+        chain: netConfig.chain,
+        transport: custom(window.ethereum)
+      });
+
+      return userAddress;
+    }
+
+    // Create payment header following x402 spec
+    async function createPaymentHeader(paymentRequirements, x402Version) {
+      const { maxAmountRequired, payTo, scheme, network, maxTimeoutSeconds, asset, extra } = paymentRequirements;
+
+      // Generate nonce (32 random bytes as hex)
+      const randomBytes = new Uint8Array(32);
+      crypto.getRandomValues(randomBytes);
+      const nonce = toHex(randomBytes);
+
+      const now = Math.floor(Date.now() / 1000);
+      const validAfter = (now - 600).toString(); // 10 minutes ago
+      const validBefore = (now + maxTimeoutSeconds).toString();
+
+      const authorization = {
+        from: getAddress(userAddress),
+        to: getAddress(payTo),
+        value: maxAmountRequired,
+        validAfter,
+        validBefore,
+        nonce
+      };
+
+      // Get chainId from network
+      const networkChainId = NETWORK_CONFIG[network]?.chainId || 8453;
+
+      // EIP-712 typed data for USDC TransferWithAuthorization
+      const domain = {
+        name: extra?.name || 'USD Coin',
+        version: extra?.version || '2',
+        chainId: networkChainId,
+        verifyingContract: getAddress(asset)
+      };
+
+      const types = {
+        TransferWithAuthorization: [
+          { name: 'from', type: 'address' },
+          { name: 'to', type: 'address' },
+          { name: 'value', type: 'uint256' },
+          { name: 'validAfter', type: 'uint256' },
+          { name: 'validBefore', type: 'uint256' },
+          { name: 'nonce', type: 'bytes32' }
+        ]
+      };
+
+      const message = {
+        from: getAddress(userAddress),
+        to: getAddress(payTo),
+        value: BigInt(maxAmountRequired),
+        validAfter: BigInt(validAfter),
+        validBefore: BigInt(validBefore),
+        nonce
+      };
+
+      // Sign typed data
+      const signature = await walletClient.signTypedData({
+        account: userAddress,
+        domain,
+        types,
+        primaryType: 'TransferWithAuthorization',
+        message
+      });
+
+      // Build payment payload
+      const paymentPayload = {
+        x402Version,
+        scheme,
+        network,
+        payload: {
+          signature,
+          authorization
+        }
+      };
+
+      // Base64 encode
+      return btoa(JSON.stringify(paymentPayload));
+    }
+
+    // Make X402 API call with payment
+    async function callX402API(endpoint, body) {
+      // First call - will get 402 with payment details
+      const initialResponse = await fetch(`${X402_API}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (initialResponse.ok) {
+        return await initialResponse.json();
+      }
+
+      if (initialResponse.status !== 402) {
+        const errText = await initialResponse.text();
+        throw new Error(`API error ${initialResponse.status}: ${errText}`);
+      }
+
+      // Parse 402 response for payment details
+      const paymentDetails = await initialResponse.json();
+      const { x402Version, accepts } = paymentDetails;
+
+      if (!accepts || accepts.length === 0) {
+        throw new Error('No payment options available');
+      }
+
+      // Select the first payment option
+      const paymentRequirements = accepts[0];
+      const network = paymentRequirements.network;
+
+      // Connect wallet if not connected or on different network
+      if (!walletClient || currentNetwork !== network) {
+        await connectWallet(network);
+      }
+
+      // Create signed payment header
+      const paymentHeader = await createPaymentHeader(paymentRequirements, x402Version);
+
+      // Retry with payment header
+      const paidResponse = await fetch(`${X402_API}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-PAYMENT': paymentHeader
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!paidResponse.ok) {
+        const errData = await paidResponse.json().catch(() => ({}));
+        throw new Error(errData.error || `Payment failed: ${paidResponse.status}`);
+      }
+
+      return await paidResponse.json();
+    }
+
+    // Generate roast based on portfolio data
+    function generateRoast(portfolio, pnl, intensity) {
+      const roasts = {
+        mild: [],
+        spicy: [],
+        nuclear: []
+      };
+
+      const totalValue = portfolio?.portfolio?.total_value_usd || 0;
+      const balances = portfolio?.portfolio?.balances || [];
+      const tokenCount = balances.length;
+      const pnlData = pnl?.pnl_report?.overall_metrics || {};
+      const netPnl = parseFloat(pnlData.net_pnl_usd) || 0;
+
+      // Check for meme coins
+      const memeCoins = balances.filter(b =>
+        ['PEPE', 'DOGE', 'SHIB', 'FLOKI', 'BONK', 'WIF', 'BRETT', 'TOSHI', 'DEGEN'].includes(b.asset?.toUpperCase())
+      );
+      const hasStables = balances.some(b => ['USDC', 'USDT', 'DAI'].includes(b.asset?.toUpperCase()));
+      const topHolding = balances[0];
+
+      // Mild roasts
+      roasts.mild.push(
+        `A portfolio worth $${totalValue.toFixed(2)}? That's cute. My coffee order costs more.`,
+        `${tokenCount} tokens and somehow you still managed to pick all the wrong ones.`,
+        `I see you're diversified... across multiple ways to lose money.`,
+        `Your portfolio says "I read about crypto on Reddit once."`,
+        `Interesting strategy: buy high, never sell.`
+      );
+
+      // Spicy roasts
+      roasts.spicy.push(
+        `$${totalValue.toFixed(2)} net worth? Sir, this is a Wendy's application, not a flex.`,
+        `Your portfolio has ${tokenCount} tokens. That's not diversification, that's indecision with extra steps.`,
+        `You've got ${hasStables ? 'stablecoins' : 'no stables'}. ${hasStables ? 'Even your safe plays are boring.' : 'Living dangerously I see. Or just stupidly.'}`,
+        netPnl < 0 ? `Down ${Math.abs(netPnl).toFixed(2)}? The market thanks you for your donation.` : `Up $${netPnl.toFixed(2)}? Don't worry, you'll find a way to ruin it.`,
+        `Your wallet activity screams "I make financial decisions at 3am after 4 beers."`,
+        `This portfolio has "I watched one YouTube video" energy.`
+      );
+
+      // Nuclear roasts
+      roasts.nuclear.push(
+        `Your portfolio is what happens when you take financial advice from Twitter threads at 3am.`,
+        `I've seen better investment strategies from a drunk monkey throwing darts at a dartboard.`,
+        `$${totalValue.toFixed(2)}? My guy, inflation is eating this faster than you can say "HODL".`,
+        memeCoins.length > 0 ? `You own ${memeCoins.map(m => m.asset).join(', ')}. The degen is strong with this one. Unfortunately, so is the poverty.` : `No meme coins? You're either wise or just boring. Based on this portfolio, I'm guessing boring.`,
+        `${tokenCount} tokens and a net worth of $${totalValue.toFixed(2)}. That's $${(totalValue/Math.max(tokenCount,1)).toFixed(2)} per token. My piggy bank is more impressive.`,
+        `Your portfolio looks like you asked ChatGPT "how do I lose money fast" and followed every suggestion.`,
+        `This wallet is proof that natural selection doesn't work fast enough.`,
+        `Somewhere out there, a financial advisor just felt a disturbance in the force.`
+      );
+
+      if (topHolding && totalValue > 0) {
+        const topPercent = ((topHolding.balance_usd / totalValue) * 100).toFixed(1);
+        roasts.nuclear.push(
+          `${topPercent}% in ${topHolding.asset}? That's not conviction, that's desperation wearing a disguise.`
+        );
+        roasts.spicy.push(
+          `${topPercent}% concentration in ${topHolding.asset}. Did someone tell you diversification was a scam?`
+        );
+      }
+
+      // Select random roast based on intensity
+      const intensityRoasts = roasts[intensity];
+      const randomRoast = intensityRoasts[Math.floor(Math.random() * intensityRoasts.length)];
+
+      return randomRoast;
+    }
+
+    // Main roast function
+    async function roastWallet() {
+      const targetWallet = walletInput.value.trim();
+
+      if (!targetWallet || !/^0x[a-fA-F0-9]{40}$/.test(targetWallet)) {
+        showError('Please enter a valid Ethereum address (0x...)');
+        return;
+      }
+
+      hideError();
+      hideResult();
+      showLoading();
+      roastBtn.disabled = true;
+
+      try {
+        loading.textContent = 'Fetching portfolio (this costs $0.01)';
+
+        // Call portfolio API via X402
+        const portfolio = await callX402API('/api/get_portfolio', {
+          wallet_address: targetWallet
+        });
+
+        loading.textContent = 'Fetching P&L data';
+
+        // Call PnL API via X402 (optional, don't fail if it errors)
+        let pnl = null;
+        try {
+          pnl = await callX402API('/api/get_pnl_report', {
+            wallet_address: targetWallet
+          });
+        } catch (e) {
+          console.log('PnL fetch failed, continuing without it:', e.message);
+        }
+
+        loading.textContent = 'Generating roast';
+
+        // Generate the roast
+        const roast = generateRoast(portfolio, pnl, selectedIntensity);
+
+        // Display result
+        const balances = portfolio?.portfolio?.balances || [];
+        const totalValue = portfolio?.portfolio?.total_value_usd || 0;
+        const pnlData = pnl?.pnl_report?.overall_metrics || {};
+        const netPnlValue = parseFloat(pnlData.net_pnl_usd || 0);
+
+        roastText.textContent = `"${roast}"`;
+        stats.innerHTML = `
+          <div>Wallet: <span>${targetWallet.slice(0,6)}...${targetWallet.slice(-4)}</span></div>
+          <div>Total Value: <span>$${totalValue.toFixed(2)}</span></div>
+          <div>Tokens: <span>${balances.length}</span></div>
+          <div>Net P&L: <span style="color:${netPnlValue >= 0 ? '#00d26a' : '#ff6b6b'}">${netPnlValue >= 0 ? '+' : ''}$${netPnlValue.toFixed(2)}</span></div>
+        `;
+
+        // Setup share button
+        shareBtn.onclick = () => {
+          const tweetText = `I just got my wallet roasted for $0.01 via x402
+
+"${roast}"
+
+Try it: https://roast.x402.heyelsa.ai
+
+Powered by @heyelsa_ai - zero API keys, just micropayments`;
+          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
+        };
+
+        hideLoading();
+        showResult();
+
+      } catch (err) {
+        hideLoading();
+        showError(err.message || 'Something went wrong. Please try again.');
+        console.error('Roast error:', err);
+      } finally {
+        roastBtn.disabled = false;
+      }
+    }
+
+    function showLoading() { loading.classList.add('visible'); }
+    function hideLoading() { loading.classList.remove('visible'); }
+    function showError(msg) { error.textContent = msg; error.classList.add('visible'); }
+    function hideError() { error.classList.remove('visible'); }
+    function showResult() { result.classList.add('visible'); }
+    function hideResult() { result.classList.remove('visible'); }
+
+    // Event listeners
+    roastBtn.addEventListener('click', roastWallet);
+    walletInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') roastWallet();
+    });
+  </script>
+</body>
+</html>
