@@ -6,7 +6,7 @@ import { useRoast } from '@/hooks/use-roast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Flame, Zap, Skull } from 'lucide-react';
+import { Flame, Zap, Skull, User } from 'lucide-react';
 import { LoadingState } from './loading-state';
 import { isValidAddressOrEns } from '@/lib/ens/resolve';
 import { WHALE_WALLETS } from '@/lib/x402/constants';
@@ -29,7 +29,7 @@ export function WalletRoastForm() {
   const [intensity, setIntensity] = useState<Intensity>('nuclear');
   const [pendingRoast, setPendingRoast] = useState(false);
 
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const { connect, connectors, isPending: isConnecting } = useConnect();
 
   useEffect(() => {
@@ -49,11 +49,16 @@ export function WalletRoastForm() {
 
   // Start roast after wallet connects
   useEffect(() => {
-    if (pendingRoast && isConnected && !isLoading) {
+    if (pendingRoast && isConnected && !isLoading && address) {
       setPendingRoast(false);
-      startRoast(walletAddress, intensity);
+      // Use connected address if walletAddress is empty (Roast Me flow)
+      const targetAddress = walletAddress || address;
+      if (!walletAddress) {
+        setWalletAddress(address);
+      }
+      startRoast(targetAddress, intensity);
     }
-  }, [pendingRoast, isConnected, isLoading, walletAddress, intensity, startRoast]);
+  }, [pendingRoast, isConnected, isLoading, walletAddress, address, intensity, startRoast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,6 +78,23 @@ export function WalletRoastForm() {
     }
 
     await startRoast(walletAddress, intensity);
+  };
+
+  const handleRoastMe = async () => {
+    // If not connected, connect first
+    if (!isConnected || !address) {
+      const injectedConnector = connectors.find(c => c.id === 'injected') || connectors[0];
+      if (injectedConnector) {
+        setPendingRoast(true);
+        setWalletAddress(''); // Will be set after connection
+        connect({ connector: injectedConnector });
+      }
+      return;
+    }
+
+    // Use connected wallet address
+    setWalletAddress(address);
+    await startRoast(address, intensity);
   };
 
   const handleReset = () => {
@@ -213,6 +235,18 @@ export function WalletRoastForm() {
                 <Flame className="h-6 w-6" />
               </span>
             )}
+          </Button>
+
+          {/* Roast Me button */}
+          <Button
+            type="button"
+            onClick={handleRoastMe}
+            disabled={!mounted || isLoading || isConnecting}
+            variant="outline"
+            className="w-full h-14 text-xl font-bold rounded-xl border-2 border-accent/50 hover:bg-accent/10 text-accent transition-all transform hover:scale-102"
+          >
+            <User className="h-5 w-5 mr-2" />
+            ROAST ME
           </Button>
 
           {/* Persona quick-select */}
