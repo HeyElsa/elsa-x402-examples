@@ -1,22 +1,21 @@
+import { getDefaultConfig } from 'connectkit';
 import { createConfig, http } from 'wagmi';
 import { base, polygon } from 'wagmi/chains';
-import { injected, coinbaseWallet } from 'wagmi/connectors';
 
-export const wagmiConfig = createConfig({
+const config = getDefaultConfig({
   chains: [base, polygon],
-  connectors: [
-    injected({
-      shimDisconnect: true,
-    }),
-    coinbaseWallet({
-      appName: 'Wallet Roast',
-    }),
-  ],
   transports: {
     [base.id]: http('https://mainnet.base.org'),
     [polygon.id]: http('https://polygon-rpc.com'),
   },
+  walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  appName: 'Wallet Roast',
+  appDescription: 'Get savagely roasted based on your on-chain data',
+  appUrl: 'https://walletroast.com',
+  appIcon: 'https://walletroast.com/logo.png',
 });
+
+export const wagmiConfig = createConfig(config);
 
 declare module 'wagmi' {
   interface Register {

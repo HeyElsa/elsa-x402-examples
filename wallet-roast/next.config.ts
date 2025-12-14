@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   // Exclude WalletConnect's problematic dependencies from server-side bundling
   serverExternalPackages: ['pino', 'pino-pretty', 'thread-stream'],
 
+  // Turbopack config (Next.js 16 uses Turbopack by default)
+  turbopack: {},
+
   // Security headers
   async headers() {
     return [
