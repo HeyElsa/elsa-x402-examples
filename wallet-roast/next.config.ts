@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Exclude WalletConnect's problematic dependencies from server-side bundling
+  serverExternalPackages: ['pino', 'pino-pretty', 'thread-stream'],
+
   // Security headers
   async headers() {
     return [

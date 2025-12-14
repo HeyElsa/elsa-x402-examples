@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAccount, useConnect } from 'wagmi';
+import { useAccount } from 'wagmi';
+import { useModal } from 'connectkit';
 import { useRoast } from '@/hooks/use-roast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,7 +31,7 @@ export function WalletRoastForm() {
   const [pendingRoast, setPendingRoast] = useState(false);
 
   const { address, isConnected } = useAccount();
-  const { connect, connectors, isPending: isConnecting } = useConnect();
+  const { setOpen: openConnectModal } = useModal();
 
   useEffect(() => {
     setMounted(true);
@@ -67,13 +68,10 @@ export function WalletRoastForm() {
       return;
     }
 
-    // If not connected, connect first then roast
+    // If not connected, open wallet modal first
     if (!isConnected) {
-      const injectedConnector = connectors.find(c => c.id === 'injected') || connectors[0];
-      if (injectedConnector) {
-        setPendingRoast(true);
-        connect({ connector: injectedConnector });
-      }
+      setPendingRoast(true);
+      openConnectModal(true);
       return;
     }
 
@@ -81,14 +79,11 @@ export function WalletRoastForm() {
   };
 
   const handleRoastMe = async () => {
-    // If not connected, connect first
+    // If not connected, open wallet modal first
     if (!isConnected || !address) {
-      const injectedConnector = connectors.find(c => c.id === 'injected') || connectors[0];
-      if (injectedConnector) {
-        setPendingRoast(true);
-        setWalletAddress(''); // Will be set after connection
-        connect({ connector: injectedConnector });
-      }
+      setPendingRoast(true);
+      setWalletAddress(''); // Will be set after connection
+      openConnectModal(true);
       return;
     }
 
@@ -208,9 +203,9 @@ export function WalletRoastForm() {
           {/* Roast button - connects wallet on click if needed */}
           <Button
             type="submit"
-            disabled={!mounted || isLoading || isConnecting || !walletAddress.trim()}
+            disabled={!mounted || isLoading || !walletAddress.trim()}
             className={`w-full h-16 text-2xl font-bold rounded-xl transition-all transform hover:scale-102 ${
-              isLoading || isConnecting
+              isLoading
                 ? 'bg-muted animate-pulse'
                 : 'bg-gradient-to-r from-primary via-destructive to-primary bg-[length:200%_100%] hover:bg-right animate-fire-glow text-white'
             }`}
@@ -218,11 +213,6 @@ export function WalletRoastForm() {
           >
             {!mounted ? (
               <span>Loading...</span>
-            ) : isConnecting ? (
-              <span className="flex items-center gap-3">
-                <Flame className="h-6 w-6 animate-spin" />
-                CONNECTING...
-              </span>
             ) : isLoading ? (
               <span className="flex items-center gap-3">
                 <Flame className="h-6 w-6 animate-spin" />
@@ -241,7 +231,7 @@ export function WalletRoastForm() {
           <Button
             type="button"
             onClick={handleRoastMe}
-            disabled={!mounted || isLoading || isConnecting}
+            disabled={!mounted || isLoading}
             variant="outline"
             className="w-full h-14 text-xl font-bold rounded-xl border-2 border-accent/50 hover:bg-accent/10 text-accent transition-all transform hover:scale-102"
           >

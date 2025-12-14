@@ -1,11 +1,16 @@
-import { http, createConfig } from 'wagmi';
+import { createConfig, http } from 'wagmi';
 import { base, polygon } from 'wagmi/chains';
-import { injected } from 'wagmi/connectors';
+import { injected, coinbaseWallet } from 'wagmi/connectors';
 
 export const wagmiConfig = createConfig({
   chains: [base, polygon],
   connectors: [
-    injected(),
+    injected({
+      shimDisconnect: true,
+    }),
+    coinbaseWallet({
+      appName: 'Wallet Roast',
+    }),
   ],
   transports: {
     [base.id]: http('https://mainnet.base.org'),
