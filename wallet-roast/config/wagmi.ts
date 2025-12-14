@@ -23,7 +23,7 @@ export const wagmiConfig = createConfig({
               url: 'https://walletroast.com',
               icons: ['https://walletroast.com/logo.png'],
             },
-            showQrModal: true,
+            showQrModal: false, // ConnectKit handles the QR modal
           }),
         ]
       : []),
