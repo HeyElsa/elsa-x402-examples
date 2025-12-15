@@ -335,20 +335,22 @@ export function WalletRoastForm() {
 
       {/* Footer */}
       <footer className="mt-8 text-center space-y-3">
-        <div className="flex items-center justify-center gap-2 text-muted-foreground">
-          <Zap className="h-4 w-4 text-primary" />
+        <a
+          href="https://x402.heyelsa.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          style={{ fontFamily: 'var(--font-inter), sans-serif' }}
+        >
           <span>Powered by</span>
-          <a
-            href="https://x402.heyelsa.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:text-primary/80 font-semibold transition-colors"
-          >
-            Elsa x402
-          </a>
-          <span>+</span>
-          <span className="text-foreground font-medium">Grok AI</span>
-        </div>
+          <img
+            src="https://raw.githubusercontent.com/HeyElsa/brand-assets/main/Transparent/img_transparent.png"
+            alt="Elsa"
+            className="h-5 w-5"
+          />
+          <span className="text-muted-foreground/50">|</span>
+          <span>x402</span>
+        </a>
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <span>Zero API keys</span>
           <span className="text-muted-foreground/50">•</span>

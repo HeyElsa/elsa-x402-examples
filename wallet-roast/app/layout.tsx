@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Bangers, Nunito, Geist_Mono } from 'next/font/google';
+import { Bangers, Nunito, Geist_Mono, Inter } from 'next/font/google';
 import { Providers } from './providers';
 import './globals.css';
 
@@ -17,6 +17,11 @@ const nunito = Nunito({
 const geistMono = Geist_Mono({
   subsets: ['latin'],
   variable: '--font-geist-mono',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
@@ -49,7 +54,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${bangers.variable} ${nunito.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body className={`${bangers.variable} ${nunito.variable} ${geistMono.variable} ${inter.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>
