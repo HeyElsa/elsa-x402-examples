@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Bangers, Nunito, Geist_Mono, Inter } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/react';
 import { Providers } from './providers';
 import './globals.css';
 
@@ -56,6 +57,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${bangers.variable} ${nunito.variable} ${geistMono.variable} ${inter.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
