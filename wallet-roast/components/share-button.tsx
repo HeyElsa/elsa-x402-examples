@@ -12,7 +12,7 @@ export function ShareButton({ roastText }: ShareButtonProps) {
 
 Try it yourself 👉 https://roast.x402.heyelsa.ai
 
-Powered by @heyelsa_ai - zero API keys, just micropayments ⚡`;
+Powered by @HeyElsaAI - zero API keys, just micropayments ⚡`;
 
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`,
