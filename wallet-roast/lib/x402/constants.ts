@@ -45,5 +45,5 @@ export const MEME_COINS = [
 // Stablecoins
 export const STABLECOINS = ['USDC', 'USDT', 'DAI'];
 
-// X402 API configuration
-export const X402_API_URL = process.env.NEXT_PUBLIC_X402_API_URL || 'http://localhost:3002';
+// X402 API configuration (uses ELSA token endpoint)
+export const X402_API_URL = process.env.NEXT_PUBLIC_X402_API_URL || 'https://x402-api.heyelsa.ai';

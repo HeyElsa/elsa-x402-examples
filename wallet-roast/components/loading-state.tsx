@@ -31,7 +31,7 @@ const stepConfig: Record<LoadingStep, { icon: typeof Flame | null; text: string;
   signing: {
     icon: PenTool,
     text: 'Sign to authorize...',
-    subtext: 'Approve the $0.01 payment',
+    subtext: 'Approve the ELSA token payment',
   },
   fetching: {
     icon: Flame,

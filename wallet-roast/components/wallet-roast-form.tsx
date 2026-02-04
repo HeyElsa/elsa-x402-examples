@@ -103,7 +103,7 @@ export function WalletRoastForm() {
       ? roastText.substring(0, 147) + '...'
       : roastText;
     const tweetText = encodeURIComponent(
-      `"${roastSnippet}"\n\nGet roasted for $0.01: https://walletroast.com\n\n@HeyElsaAI #x402`,
+      `"${roastSnippet}"\n\nGet roasted with ELSA: https://walletroast.com\n\n@HeyElsaAI #x402`,
     );
     window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
   };
@@ -142,7 +142,7 @@ export function WalletRoastForm() {
 
         <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent text-accent-foreground font-bold text-lg border-2 border-accent/50 shadow-lg transform hover:scale-105 transition-transform">
           <Flame className="h-5 w-5 animate-pulse" />
-          $0.01 USDC on Base
+          ~0.12 ELSA on Base
         </div>
         <p className="text-sm text-muted-foreground/80 italic font-[family-name:var(--font-nunito)]">
           Cheaper than your last rugpull
@@ -357,7 +357,7 @@ export function WalletRoastForm() {
           <span>Direct micropayment</span>
         </div>
         <p className="text-sm text-primary font-medium">
-          This costs $0.01 paid directly via x402
+          Pay with ELSA tokens via x402
         </p>
       </footer>
     </div>

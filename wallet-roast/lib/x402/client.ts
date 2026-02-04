@@ -41,11 +41,12 @@ export interface PnLResponse {
 
 /**
  * Get payment requirements from X402 API (expects 402 response)
+ * Uses the ELSA token endpoint for payments
  */
 export async function getPaymentRequirements(
   walletAddress: string
 ): Promise<X402PaymentResponse> {
-  const response = await fetch(`${X402_API_URL}/api/get_portfolio`, {
+  const response = await fetch(`${X402_API_URL}/api/elsa/get_portfolio`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ wallet_address: walletAddress }),
@@ -65,12 +66,13 @@ export async function getPaymentRequirements(
 
 /**
  * Fetch portfolio with X-PAYMENT header
+ * Uses the ELSA token endpoint for payments
  */
 export async function fetchPortfolioWithPayment(
   walletAddress: string,
   paymentHeader: string
 ): Promise<PortfolioResponse> {
-  const response = await fetch(`${X402_API_URL}/api/get_portfolio`, {
+  const response = await fetch(`${X402_API_URL}/api/elsa/get_portfolio`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -102,6 +104,7 @@ export async function fetchPortfolioWithPayment(
 
 /**
  * Fetch PnL report (optional, may require separate payment)
+ * Uses the ELSA token endpoint for payments
  */
 export async function fetchPnLReport(
   walletAddress: string,
@@ -115,7 +118,7 @@ export async function fetchPnLReport(
       headers['X-PAYMENT'] = paymentHeader;
     }
 
-    const response = await fetch(`${X402_API_URL}/api/get_pnl_report`, {
+    const response = await fetch(`${X402_API_URL}/api/elsa/get_pnl_report`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ wallet_address: walletAddress }),
