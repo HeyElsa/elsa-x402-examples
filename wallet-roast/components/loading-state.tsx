@@ -1,6 +1,7 @@
 'use client';
 
 import { Flame, CreditCard, Sparkles, Search, Wallet, PenTool } from 'lucide-react';
+import type { TokenType } from '@/lib/x402/client';
 
 export type LoadingStep =
   | 'idle'
@@ -14,9 +15,10 @@ export type LoadingStep =
 
 interface LoadingStateProps {
   step: LoadingStep;
+  tokenType?: TokenType;
 }
 
-const stepConfig: Record<LoadingStep, { icon: typeof Flame | null; text: string; subtext: string } | null> = {
+const getStepConfig = (tokenType: TokenType = 'elsa'): Record<LoadingStep, { icon: typeof Flame | null; text: string; subtext: string } | null> => ({
   idle: null,
   resolving: {
     icon: Search,
@@ -31,7 +33,7 @@ const stepConfig: Record<LoadingStep, { icon: typeof Flame | null; text: string;
   signing: {
     icon: PenTool,
     text: 'Sign to authorize...',
-    subtext: 'Approve the ELSA token payment',
+    subtext: tokenType === 'elsa' ? 'Approve the ELSA token payment' : 'Approve the $0.01 payment',
   },
   fetching: {
     icon: Flame,
@@ -45,9 +47,10 @@ const stepConfig: Record<LoadingStep, { icon: typeof Flame | null; text: string;
   },
   complete: null,
   error: null,
-};
+});
 
-export function LoadingState({ step }: LoadingStateProps) {
+export function LoadingState({ step, tokenType = 'elsa' }: LoadingStateProps) {
+  const stepConfig = getStepConfig(tokenType);
   const config = stepConfig[step];
 
   if (!config) return null;

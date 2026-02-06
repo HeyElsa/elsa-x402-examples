@@ -9,6 +9,7 @@ import type { Hex } from 'viem';
 import {
   getPaymentRequirements,
   fetchPortfolioWithPayment,
+  type TokenType,
 } from '@/lib/x402/client';
 import { buildPaymentTypedData, encodePaymentHeader } from '@/lib/x402/eip712';
 import { NETWORK_CONFIG, type NetworkName } from '@/lib/x402/constants';
@@ -43,7 +44,7 @@ export function useRoast() {
   });
 
   const startRoast = useCallback(
-    async (targetWallet: string, intensity: Intensity) => {
+    async (targetWallet: string, intensity: Intensity, tokenType: TokenType = 'elsa') => {
       try {
         setError(null);
         setPortfolioStats(null);
@@ -71,7 +72,7 @@ export function useRoast() {
         setStep('connecting');
 
         // Step 2: Get payment requirements from X402 server
-        const paymentReq = await getPaymentRequirements(resolvedAddress);
+        const paymentReq = await getPaymentRequirements(resolvedAddress, tokenType);
         const paymentOption = paymentReq.accepts[0];
 
         if (!paymentOption) {
@@ -125,7 +126,8 @@ export function useRoast() {
         // Step 6: Fetch portfolio with payment
         const portfolioResponse = await fetchPortfolioWithPayment(
           resolvedAddress,
-          paymentHeader
+          paymentHeader,
+          tokenType
         );
 
         const portfolioData = portfolioResponse.portfolio || {};

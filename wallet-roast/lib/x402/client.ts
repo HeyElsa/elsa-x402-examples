@@ -1,5 +1,7 @@
 import { X402_API_URL, type NetworkName } from './constants';
 
+export type TokenType = 'usdc' | 'elsa';
+
 export interface X402PaymentResponse {
   x402Version: number;
   error?: string;
@@ -41,12 +43,18 @@ export interface PnLResponse {
 
 /**
  * Get payment requirements from X402 API (expects 402 response)
- * Uses the ELSA token endpoint for payments
+ * @param walletAddress - The wallet address to query
+ * @param tokenType - The token type to use for payment ('usdc' or 'elsa', defaults to 'elsa')
  */
 export async function getPaymentRequirements(
-  walletAddress: string
+  walletAddress: string,
+  tokenType: TokenType = 'elsa'
 ): Promise<X402PaymentResponse> {
-  const response = await fetch(`${X402_API_URL}/api/elsa/get_portfolio`, {
+  const endpoint = tokenType === 'elsa'
+    ? `${X402_API_URL}/api/elsa/get_portfolio`
+    : `${X402_API_URL}/api/get_portfolio`;
+
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ wallet_address: walletAddress }),
@@ -66,13 +74,20 @@ export async function getPaymentRequirements(
 
 /**
  * Fetch portfolio with X-PAYMENT header
- * Uses the ELSA token endpoint for payments
+ * @param walletAddress - The wallet address to query
+ * @param paymentHeader - The payment header
+ * @param tokenType - The token type to use for payment ('usdc' or 'elsa', defaults to 'elsa')
  */
 export async function fetchPortfolioWithPayment(
   walletAddress: string,
-  paymentHeader: string
+  paymentHeader: string,
+  tokenType: TokenType = 'elsa'
 ): Promise<PortfolioResponse> {
-  const response = await fetch(`${X402_API_URL}/api/elsa/get_portfolio`, {
+  const endpoint = tokenType === 'elsa'
+    ? `${X402_API_URL}/api/elsa/get_portfolio`
+    : `${X402_API_URL}/api/get_portfolio`;
+
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -104,11 +119,14 @@ export async function fetchPortfolioWithPayment(
 
 /**
  * Fetch PnL report (optional, may require separate payment)
- * Uses the ELSA token endpoint for payments
+ * @param walletAddress - The wallet address to query
+ * @param paymentHeader - The payment header (optional)
+ * @param tokenType - The token type to use for payment ('usdc' or 'elsa', defaults to 'elsa')
  */
 export async function fetchPnLReport(
   walletAddress: string,
-  paymentHeader?: string
+  paymentHeader?: string,
+  tokenType: TokenType = 'elsa'
 ): Promise<PnLResponse | null> {
   try {
     const headers: Record<string, string> = {
@@ -118,7 +136,11 @@ export async function fetchPnLReport(
       headers['X-PAYMENT'] = paymentHeader;
     }
 
-    const response = await fetch(`${X402_API_URL}/api/elsa/get_pnl_report`, {
+    const endpoint = tokenType === 'elsa'
+      ? `${X402_API_URL}/api/elsa/get_pnl_report`
+      : `${X402_API_URL}/api/get_pnl_report`;
+
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers,
       body: JSON.stringify({ wallet_address: walletAddress }),

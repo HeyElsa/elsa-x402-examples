@@ -12,6 +12,7 @@ import { LoadingState } from './loading-state';
 import { isValidAddressOrEns } from '@/lib/ens/resolve';
 import { WHALE_WALLETS } from '@/lib/x402/constants';
 import type { Intensity } from '@/lib/grok/prompts';
+import type { TokenType } from '@/lib/x402/client';
 import Image from 'next/image';
 
 const intensityConfig = {
@@ -28,6 +29,7 @@ export function WalletRoastForm() {
   const [mounted, setMounted] = useState(false);
   const [walletAddress, setWalletAddress] = useState('');
   const [intensity, setIntensity] = useState<Intensity>('nuclear');
+  const [tokenType, setTokenType] = useState<TokenType>('elsa');
   const [pendingRoast, setPendingRoast] = useState(false);
 
   const { address, isConnected } = useAccount();
@@ -57,9 +59,9 @@ export function WalletRoastForm() {
       if (!walletAddress) {
         setWalletAddress(address);
       }
-      startRoast(targetAddress, intensity);
+      startRoast(targetAddress, intensity, tokenType);
     }
-  }, [pendingRoast, isConnected, isLoading, walletAddress, address, intensity, startRoast]);
+  }, [pendingRoast, isConnected, isLoading, walletAddress, address, intensity, tokenType, startRoast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +77,7 @@ export function WalletRoastForm() {
       return;
     }
 
-    await startRoast(walletAddress, intensity);
+    await startRoast(walletAddress, intensity, tokenType);
   };
 
   const handleRoastMe = async () => {
@@ -89,7 +91,7 @@ export function WalletRoastForm() {
 
     // Use connected wallet address
     setWalletAddress(address);
-    await startRoast(address, intensity);
+    await startRoast(address, intensity, tokenType);
   };
 
   const handleReset = () => {
@@ -102,8 +104,9 @@ export function WalletRoastForm() {
     const roastSnippet = roastText && roastText.length > 150
       ? roastText.substring(0, 147) + '...'
       : roastText;
+    const paymentMethod = tokenType === 'elsa' ? 'ELSA' : '$0.01';
     const tweetText = encodeURIComponent(
-      `"${roastSnippet}"\n\nGet roasted with ELSA: https://walletroast.com\n\n@HeyElsaAI #x402`,
+      `"${roastSnippet}"\n\nGet roasted with ${paymentMethod}: https://walletroast.com\n\n@HeyElsaAI #x402`,
     );
     window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
   };
@@ -140,13 +143,45 @@ export function WalletRoastForm() {
           Get savagely roasted based on your on-chain data
         </p>
 
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent text-accent-foreground font-bold text-lg border-2 border-accent/50 shadow-lg transform hover:scale-105 transition-transform">
-          <Flame className="h-5 w-5 animate-pulse" />
-          ~0.12 ELSA on Base
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent text-accent-foreground font-bold text-lg border-2 border-accent/50 shadow-lg transform hover:scale-105 transition-transform">
+              <Flame className="h-5 w-5 animate-pulse" />
+              {tokenType === 'elsa' ? '~0.12 ELSA on Base' : '$0.01 USDC on Base'}
+            </div>
+
+            {/* Token Toggle */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border">
+              <span className="text-sm text-muted-foreground">Pay with:</span>
+              <button
+                onClick={() => setTokenType('elsa')}
+                disabled={isLoading}
+                className={`px-3 py-1 rounded-full text-sm font-semibold transition-all ${
+                  tokenType === 'elsa'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                ELSA
+              </button>
+              <button
+                onClick={() => setTokenType('usdc')}
+                disabled={isLoading}
+                className={`px-3 py-1 rounded-full text-sm font-semibold transition-all ${
+                  tokenType === 'usdc'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                USDC
+              </button>
+            </div>
+          </div>
+
+          <p className="text-sm text-muted-foreground/80 italic font-[family-name:var(--font-nunito)]">
+            Cheaper than your last rugpull
+          </p>
         </div>
-        <p className="text-sm text-muted-foreground/80 italic font-[family-name:var(--font-nunito)]">
-          Cheaper than your last rugpull
-        </p>
       </div>
 
       <Card className="p-6 md:p-8 space-y-6 bg-card border-4 border-primary/40 rounded-2xl shadow-2xl relative overflow-hidden">
@@ -258,7 +293,7 @@ export function WalletRoastForm() {
           </div>
         </form>
 
-        <LoadingState step={step} />
+        <LoadingState step={step} tokenType={tokenType} />
 
         {error && (
           <div className="mt-4 p-4 bg-destructive/10 border border-destructive/30 rounded-xl text-destructive animate-bounce-in flex items-center gap-2">
@@ -357,7 +392,7 @@ export function WalletRoastForm() {
           <span>Direct micropayment</span>
         </div>
         <p className="text-sm text-primary font-medium">
-          Pay with ELSA tokens via x402
+          {tokenType === 'elsa' ? 'Pay with ELSA tokens via x402' : 'Pay $0.01 directly via x402'}
         </p>
       </footer>
     </div>
